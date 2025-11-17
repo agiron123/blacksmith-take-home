@@ -1,0 +1,39 @@
+{
+  "name": "bun-react-dev",
+  "build": {
+    "dockerfile": "Dockerfile",
+    "context": "."
+  },
+  "remoteUser": "bun",
+  "workspaceFolder": "/workspace",
+  "forwardPorts": [3000],
+  "containerEnv": {
+    "BUN_INSTALL": "/usr/local"
+  },
+  "postCreateCommand": "bun install",
+  "customizations": {
+    "vscode": {
+      "settings": {
+        "editor.formatOnSave": true,
+        "editor.defaultFormatter": "esbenp.prettier-vscode"
+      },
+      "extensions": [
+        "oven-sh.bun-vscode",
+        "esbenp.prettier-vscode",
+        "bradlc.vscode-tailwindcss",
+        "dbaeumer.vscode-eslint"
+      ]
+    },
+    "cursor": {
+      "settings": {
+        "editor.formatOnSave": true
+      },
+      "extensions": [
+        "oven-sh.bun-vscode",
+        "esbenp.prettier-vscode",
+        "bradlc.vscode-tailwindcss",
+        "dbaeumer.vscode-eslint"
+      ]
+    }
+  }
+}
