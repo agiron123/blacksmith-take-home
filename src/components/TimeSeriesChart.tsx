@@ -21,8 +21,8 @@ interface TimeSeriesChartProps {
   title: string;
 }
 
-export function TimeSeriesChart({ data, chartId, title }: TimeSeriesChartProps) {
-  const { hoveredX, setHoveredX, dateRange, setDateRange } = useDashboardStore();
+export function TimeSeriesChart({ data, chartId: _chartId, title }: TimeSeriesChartProps) {
+  const { hoveredX, setHoveredX, dateRange: _dateRange, setDateRange } = useDashboardStore();
 
   // Transform data for Recharts (it expects objects with named properties)
   const chartData = useMemo(
@@ -32,17 +32,17 @@ export function TimeSeriesChart({ data, chartId, title }: TimeSeriesChartProps) 
         value: point.value,
         formattedTime: format(point.timestamp, "MMM dd, HH:mm"),
       })),
-    [data]
+    [data],
   );
 
   // Calculate the hovered timestamp based on normalized position
   const hoveredTimestamp = useMemo(() => {
     if (hoveredX === null || chartData.length === 0) return null;
-    
+
     const minTimestamp = chartData[0].timestamp;
     const maxTimestamp = chartData[chartData.length - 1].timestamp;
     const range = maxTimestamp - minTimestamp;
-    
+
     return minTimestamp + range * hoveredX;
   }, [hoveredX, chartData]);
 
@@ -50,16 +50,15 @@ export function TimeSeriesChart({ data, chartId, title }: TimeSeriesChartProps) 
   const handleMouseMove = useCallback(
     (e: any) => {
       if (!e || !e.activeCoordinate || !e.activeLabel) return;
-      
+
       // Use activeLabel which is the timestamp value
-      const activeTimestamp = typeof e.activeLabel === 'number' 
-        ? e.activeLabel 
-        : new Date(e.activeLabel).getTime();
-      
+      const activeTimestamp =
+        typeof e.activeLabel === "number" ? e.activeLabel : new Date(e.activeLabel).getTime();
+
       const minTimestamp = chartData[0]?.timestamp || 0;
       const maxTimestamp = chartData[chartData.length - 1]?.timestamp || 0;
       const range = maxTimestamp - minTimestamp;
-      
+
       if (range > 0) {
         const normalizedX = (activeTimestamp - minTimestamp) / range;
         // Clamp to [0, 1]
@@ -67,7 +66,7 @@ export function TimeSeriesChart({ data, chartId, title }: TimeSeriesChartProps) 
         setHoveredX(clampedX);
       }
     },
-    [chartData, setHoveredX]
+    [chartData, setHoveredX],
   );
 
   const handleMouseLeave = useCallback(() => {
@@ -77,14 +76,15 @@ export function TimeSeriesChart({ data, chartId, title }: TimeSeriesChartProps) 
   // Handle brush change for date range selection
   const handleBrushChange = useCallback(
     (brushData: any) => {
-      if (!brushData || brushData.startIndex === undefined || brushData.endIndex === undefined) return;
-      
+      if (!brushData || brushData.startIndex === undefined || brushData.endIndex === undefined)
+        return;
+
       const startIndex = Math.max(0, Math.floor(brushData.startIndex));
       const endIndex = Math.min(chartData.length - 1, Math.ceil(brushData.endIndex));
-      
+
       const startPoint = chartData[startIndex];
       const endPoint = chartData[endIndex];
-      
+
       if (startPoint && endPoint) {
         setDateRange({
           start: new Date(startPoint.timestamp),
@@ -92,7 +92,7 @@ export function TimeSeriesChart({ data, chartId, title }: TimeSeriesChartProps) 
         });
       }
     },
-    [chartData, setDateRange]
+    [chartData, setDateRange],
   );
 
   // Custom tooltip
@@ -168,4 +168,3 @@ export function TimeSeriesChart({ data, chartId, title }: TimeSeriesChartProps) 
     </Card>
   );
 }
-

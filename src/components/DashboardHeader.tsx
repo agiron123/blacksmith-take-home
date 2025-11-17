@@ -12,7 +12,9 @@ export function DashboardHeader() {
   const { dateRange, setDateRange, layoutMode, setLayoutMode } = useDashboardStore();
   const [isDatePickerOpen, setIsDatePickerOpen] = useState(false);
 
-  const handleDateSelect = (range: { from: Date | undefined; to: Date | undefined } | undefined) => {
+  const handleDateSelect = (
+    range: { from: Date | undefined; to: Date | undefined } | undefined,
+  ) => {
     if (range?.from && range?.to) {
       setDateRange({
         start: range.from,
@@ -54,7 +56,7 @@ export function DashboardHeader() {
             variant="outline"
             className={cn(
               "w-[280px] justify-start text-left font-normal",
-              !dateRange && "text-muted-foreground"
+              !dateRange && "text-muted-foreground",
             )}
           >
             <CalendarIcon className="mr-2 h-4 w-4" />
@@ -83,4 +85,3 @@ export function DashboardHeader() {
     </div>
   );
 }
-

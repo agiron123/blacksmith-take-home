@@ -9,9 +9,7 @@ export function NotFoundPage() {
         <CardHeader>
           <CardTitle className="text-6xl font-bold text-muted-foreground">404</CardTitle>
           <CardTitle>Page Not Found</CardTitle>
-          <CardDescription>
-            The page you're looking for doesn't exist.
-          </CardDescription>
+          <CardDescription>The page you're looking for doesn't exist.</CardDescription>
         </CardHeader>
         <CardContent>
           <Button asChild>

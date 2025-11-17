@@ -18,12 +18,7 @@ export function DashboardPage() {
   // Render charts based on layout mode
   const renderCharts = () => {
     const charts = chartData.map((data) => (
-      <TimeSeriesChart
-        key={data.id}
-        chartId={data.id}
-        title={data.title}
-        data={data.data}
-      />
+      <TimeSeriesChart key={data.id} chartId={data.id} title={data.title} data={data.data} />
     ));
 
     switch (layoutMode) {
@@ -41,10 +36,7 @@ export function DashboardPage() {
   return (
     <div className="flex flex-col h-full w-full">
       <DashboardHeader />
-      <div className="flex-1 overflow-auto p-4 bg-background">
-        {renderCharts()}
-      </div>
+      <div className="flex-1 overflow-auto p-4 bg-background">{renderCharts()}</div>
     </div>
   );
 }
-

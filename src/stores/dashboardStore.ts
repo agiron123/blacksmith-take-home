@@ -24,4 +24,3 @@ export const useDashboardStore = create<DashboardState>((set) => ({
   setDateRange: (range) => set({ dateRange: range }),
   setLayoutMode: (mode) => set({ layoutMode: mode }),
 }));
-
