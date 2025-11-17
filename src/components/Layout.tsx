@@ -1,5 +1,4 @@
-import { Outlet, Link } from "react-router-dom";
-import { Button } from "@/components/ui/button";
+import { Outlet } from "react-router-dom";
 
 export function Layout() {
   return (
@@ -7,15 +6,7 @@ export function Layout() {
       <nav className="border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
         <div className="container flex h-16 items-center justify-between px-4">
           <div className="flex items-center space-x-4">
-            <h1 className="text-xl font-semibold">Bun React Starter</h1>
-          </div>
-          <div className="flex items-center space-x-4">
-            <Button asChild variant="ghost">
-              <Link to="/">Home</Link>
-            </Button>
-            <Button asChild variant="ghost">
-              <Link to="/kitchen-sink">Kitchen Sink</Link>
-            </Button>
+            <h1 className="text-xl font-semibold">Blacksmith.sh Take Home</h1>
           </div>
         </div>
       </nav>
