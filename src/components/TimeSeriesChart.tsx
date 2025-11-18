@@ -7,13 +7,10 @@ import { Bar, BarChart, CartesianGrid, XAxis } from "recharts"
 import {
   Card,
   CardContent,
-  CardDescription,
-  CardHeader,
-  CardTitle,
 } from "@/components/ui/card"
 
 import {
-  ChartConfig,
+  type ChartConfig,
   ChartContainer,
   ChartTooltip,
   ChartTooltipContent,
@@ -129,8 +126,8 @@ const chartConfig = {
   },
 } satisfies ChartConfig
 
-export function ChartBarInteractive() {
-  const [activeChart, setActiveChart] =
+export function ChartBarInteractive({ title }: { title?: string }) {
+  const [activeChart] =
     React.useState<keyof typeof chartConfig>("desktop")
 
   return (
@@ -179,15 +176,25 @@ export function ChartBarInteractive() {
                 />
               }
             />
-            <Bar dataKey={activeChart} fill={`var(--color-${activeChart})`} />
+            <Bar dataKey={activeChart} fill={`var(--color-${activeChart})`} radius={8} />
           </BarChart>
         </ChartContainer>
+        {/* {title && (
+          <div className="mt-4 text-sm font-medium text-center">{title}</div>
+        )} */}
       </CardContent>
     </Card>
   )
 }
 
-// Export as TimeSeriesChart for backward compatibility
-export function TimeSeriesChart() {
-  return <ChartBarInteractive />
+export function TimeSeriesChart({
+  chartId: _chartId,
+  title,
+  data: _data
+}: {
+  chartId?: number
+  title?: string
+  data?: unknown
+}) {
+  return <ChartBarInteractive title={title} />
 }
