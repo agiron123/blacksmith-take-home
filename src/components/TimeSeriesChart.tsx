@@ -147,6 +147,7 @@ export function ChartBarInteractive() {
               left: 12,
               right: 12,
             }}
+            syncId="myBarChartSync"
           >
             <CartesianGrid vertical={false} />
             <XAxis
