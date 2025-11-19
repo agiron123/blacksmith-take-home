@@ -1,8 +1,9 @@
-import { useEffect, useState, ReactNode, useCallback } from "react";
+import { useEffect, useState, useCallback } from "react";
+import type { ReactNode } from "react";
 import GridLayout from "react-grid-layout";
 import "react-grid-layout/css/styles.css";
 import "react-resizable/css/styles.css";
-import { Layout } from "react-grid-layout";
+import type { Layout } from "react-grid-layout";
 
 interface FreeLayoutProps {
   children: ReactNode[];
@@ -95,7 +96,7 @@ export function FreeLayout({ children }: FreeLayoutProps) {
         containerPadding={[0, 0]}
       >
         {children.map((child, index) => (
-          <div key={index.toString()} className="w-full h-full cursor-move">
+          <div key={index.toString()} className="w-full h-full cursor-move min-w-0 min-h-0">
             {child}
           </div>
         ))}

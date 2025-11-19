@@ -38,58 +38,51 @@ const chartConfig = {
   },
 } satisfies ChartConfig
 
+
 export function ChartBarInteractive({
   title: _title,
-  data
+  data,
+  selectedDate,
+  setSelectedDate
 }: {
   title?: string
   data: ChartDataPoint[]
+  selectedDate: string | null
+  setSelectedDate: (date: string | null) => void
 }) {
   const [activeChart] =
     React.useState<keyof typeof chartConfig>("desktop")
   const [selectedDataPoint, setSelectedDataPoint] = React.useState<ChartDataPoint | null>(null)
 
   React.useEffect(() => {
-    if (data.length > 0) {
+    if (data.length > 0 && !selectedDate) {
       const lastDataPoint = data[data.length - 1]
       if (lastDataPoint && !selectedDataPoint) {
         setSelectedDataPoint(lastDataPoint)
       }
     }
-  }, [data, selectedDataPoint])
+  }, [data, selectedDataPoint, selectedDate])
 
-  const handleMouseMove = (state: any) => {
-    if (state?.activeTooltipIndex !== undefined && state?.activeTooltipIndex !== null) {
-      const index = state.activeTooltipIndex
-      if (data[index]) {
-        setSelectedDataPoint(data[index])
-      }
-    } else if (state?.activePayload && state.activePayload.length > 0) {
-      const payload = state.activePayload[0]
-      const dataPoint = payload.payload as ChartDataPoint
+  const handleBarMouseEnter = (barItem: any) => {
+    // barItem.payload contains the actual data point
+    if (barItem?.payload) {
+      const dataPoint = barItem.payload as ChartDataPoint
       setSelectedDataPoint(dataPoint)
+      setSelectedDate(dataPoint.date)
     }
   }
 
-  const handleMouseLeave = () => {
-    // Keep the last selected data point visible
-  }
-
-  const formatDate = (dateString: string) => {
-    const date = new Date(dateString)
-    return date.toLocaleDateString("en-US", {
-      month: "short",
-      day: "numeric",
-      year: "numeric",
-    })
+  const handleBarMouseLeave = () => {
+    // Optionally clear selection when leaving bars
+    // setSelectedDataPoint(null)
   }
 
   return (
-    <Card className="py-0">
-      <CardContent className="px-2 sm:p-6 relative">
+    <Card className="py-0 w-full">
+      <CardContent className="px-2 sm:p-6 w-full">
         <ChartContainer
           config={chartConfig}
-          className="aspect-auto h-[250px] w-full"
+          className="min-h-[250px] w-full min-w-0"
         >
           <BarChart
             accessibilityLayer
@@ -99,8 +92,6 @@ export function ChartBarInteractive({
               right: 12,
             }}
             syncId="myBarChartSync"
-            onMouseMove={handleMouseMove}
-            onMouseLeave={handleMouseLeave}
           >
             <CartesianGrid vertical={false} />
             <XAxis
@@ -121,16 +112,20 @@ export function ChartBarInteractive({
                 stroke: `var(--color-${activeChart})`,
                 strokeWidth: 2,
               }}
+              onMouseEnter={handleBarMouseEnter}
+              onMouseLeave={handleBarMouseLeave}
             />
           </BarChart>
         </ChartContainer>
         {selectedDataPoint && (
-          <div className="inline-flex h-6 items-stretch rounded-full overflow-hidden border border-slate-300 text-xs leading-none">
-            <div className="flex items-center justify-center bg-emerald-400 px-3 text-white font-semibold">
-              {formatDate(selectedDataPoint.date)}
-            </div>
-            <div className="flex min-w-[48px] items-center justify-center bg-white px-3 text-black font-semibold">
-              {activeChart === "desktop" ? selectedDataPoint.desktop : selectedDataPoint.mobile}
+          <div className="flex justify-end w-full pt-4">
+            <div className="inline-flex h-6 items-stretch rounded-[4px] overflow-hidden border border-slate-300 text-xs leading-none">
+              <div className="flex items-center justify-center bg-emerald-400 px-3 text-white font-semibold">
+                {selectedDataPoint.date}
+              </div>
+              <div className="flex min-w-[48px] items-center justify-center bg-white px-3 text-black font-semibold">
+                {activeChart === "desktop" ? selectedDataPoint.desktop : selectedDataPoint.mobile}
+              </div>
             </div>
           </div>
         )}
@@ -142,11 +137,15 @@ export function ChartBarInteractive({
 export function TimeSeriesChart({
   chartId: _chartId,
   title,
-  data: _data
+  data: _data,
+  selectedDate,
+  setSelectedDate
 }: {
   chartId?: number
   title?: string
   data?: unknown
+  selectedDate: string | null
+  setSelectedDate: (date: string | null) => void
 }) {
   const [chartData, setChartData] = React.useState<ChartDataPoint[]>([])
   const [isLoading, setIsLoading] = React.useState(true)
@@ -173,9 +172,9 @@ export function TimeSeriesChart({
 
   if (isLoading) {
     return (
-      <Card className="py-0">
-        <CardContent className="px-2 sm:p-6">
-          <div className="aspect-auto h-[250px] w-full flex items-center justify-center">
+      <Card className="py-0 min-w-0 w-full">
+        <CardContent className="px-2 sm:p-6 w-full">
+          <div className="h-[250px] w-full min-w-0 flex items-center justify-center">
             <div className="w-full space-y-2">
               <Skeleton className="h-[250px] w-full" />
             </div>
@@ -185,5 +184,5 @@ export function TimeSeriesChart({
     )
   }
 
-  return <ChartBarInteractive title={title} data={chartData} />
+  return <ChartBarInteractive title={title} data={chartData} selectedDate={selectedDate} setSelectedDate={setSelectedDate} />
 }
