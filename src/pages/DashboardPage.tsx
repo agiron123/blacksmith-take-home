@@ -1,4 +1,4 @@
-import { useMemo, useState } from "react";
+import { useMemo, useState, useCallback } from "react";
 import { useDashboardStore } from "@/stores/dashboardStore";
 import { generateAllMockData } from "@/utils/mockData";
 import { TimeSeriesChart } from "@/components/TimeSeriesChart";
@@ -9,7 +9,12 @@ import { FreeLayout } from "@/components/layouts/FreeLayout";
 
 export function DashboardPage() {
   const { layoutMode, dateRange } = useDashboardStore();
-  const [selectedDate, setSelectedDate] = useState<string | null>(null);
+  const [selectedDate, setSelectedDateState] = useState<string | null>(null);
+  
+  // Memoize the setter to prevent unnecessary re-renders
+  const setSelectedDate = useCallback((date: string | null) => {
+    setSelectedDateState(date);
+  }, []);
 
   // Generate mock data based on current date range
   const chartData = useMemo(() => {
@@ -26,6 +31,7 @@ export function DashboardPage() {
         data={data.data}
         selectedDate={selectedDate}
         setSelectedDate={setSelectedDate}
+        layoutMode={layoutMode}
       />
     ));
 

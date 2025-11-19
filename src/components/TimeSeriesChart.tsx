@@ -39,52 +39,60 @@ const chartConfig = {
 } satisfies ChartConfig
 
 
-export function ChartBarInteractive({
+export const ChartBarInteractive = React.memo(function ChartBarInteractive({
   title: _title,
   data,
   selectedDate,
-  setSelectedDate
+  setSelectedDate,
+  layoutMode
 }: {
   title?: string
   data: ChartDataPoint[]
   selectedDate: string | null
   setSelectedDate: (date: string | null) => void
+  layoutMode?: "vertical" | "grid" | "free"
 }) {
   const [activeChart] =
     React.useState<keyof typeof chartConfig>("desktop")
   const [selectedDataPoint, setSelectedDataPoint] = React.useState<ChartDataPoint | null>(null)
+  const lastUpdateRef = React.useRef<string | null>(null)
 
   React.useEffect(() => {
     if (data.length > 0 && !selectedDate) {
-      const lastDataPoint = data[data.length - 1]
-      if (lastDataPoint && !selectedDataPoint) {
-        setSelectedDataPoint(lastDataPoint)
+      const firstDataPoint = data[0]
+      if (firstDataPoint && !selectedDataPoint) {
+        setSelectedDataPoint(firstDataPoint)
       }
     }
   }, [data, selectedDataPoint, selectedDate])
 
-  const handleBarMouseEnter = (barItem: any) => {
+  const handleBarMouseEnter = React.useCallback((barItem: any) => {
     // barItem.payload contains the actual data point
     if (barItem?.payload) {
       const dataPoint = barItem.payload as ChartDataPoint
-      setSelectedDataPoint(dataPoint)
-      setSelectedDate(dataPoint.date)
+      
+      // Only update if the date actually changed
+      if (lastUpdateRef.current !== dataPoint.date) {
+        lastUpdateRef.current = dataPoint.date
+        setSelectedDataPoint(dataPoint)
+        setSelectedDate(dataPoint.date)
+      }
     }
-  }
+  }, [setSelectedDate])
 
-  const handleBarMouseLeave = () => {
+  const handleBarMouseLeave = React.useCallback(() => {
     // Optionally clear selection when leaving bars
     // setSelectedDataPoint(null)
-  }
+  }, [])
 
   return (
     <Card className="py-0 w-full">
       <CardContent className="px-2 sm:p-6 w-full">
         <ChartContainer
           config={chartConfig}
-          className="min-h-[250px] w-full min-w-0"
+          className={`w-full min-w-0 ${layoutMode === "vertical" ? "max-h-[138px]" : "min-h-[250px]"}`}
         >
-          <BarChart
+            <BarChart
             accessibilityLayer
             data={data}
             margin={{
@@ -92,6 +100,7 @@ export function ChartBarInteractive({
               right: 12,
             }}
             syncId="myBarChartSync"
+            throttleDelay={16}
           >
             <CartesianGrid vertical={false} />
             <XAxis
@@ -117,35 +126,41 @@ export function ChartBarInteractive({
             />
           </BarChart>
         </ChartContainer>
-        {selectedDataPoint && (
+
           <div className="flex justify-end w-full pt-4">
             <div className="inline-flex h-6 items-stretch rounded-[4px] overflow-hidden border border-slate-300 text-xs leading-none">
               <div className="flex items-center justify-center bg-emerald-400 px-3 text-white font-semibold">
-                {selectedDataPoint.date}
+                {selectedDataPoint ? selectedDataPoint.date : '----------'}
               </div>
               <div className="flex min-w-[48px] items-center justify-center bg-white px-3 text-black font-semibold">
-                {activeChart === "desktop" ? selectedDataPoint.desktop : selectedDataPoint.mobile}
+                {selectedDataPoint == null
+                  ? '---'
+                  : activeChart === "desktop"
+                    ? selectedDataPoint.desktop
+                    : selectedDataPoint.mobile}
               </div>
             </div>
           </div>
-        )}
+
       </CardContent>
     </Card>
   )
-}
+})
 
-export function TimeSeriesChart({
+export const TimeSeriesChart = React.memo(function TimeSeriesChart({
   chartId: _chartId,
   title,
   data: _data,
   selectedDate,
-  setSelectedDate
+  setSelectedDate,
+  layoutMode
 }: {
   chartId?: number
   title?: string
   data?: unknown
   selectedDate: string | null
   setSelectedDate: (date: string | null) => void
+  layoutMode?: "vertical" | "grid" | "free"
 }) {
   const [chartData, setChartData] = React.useState<ChartDataPoint[]>([])
   const [isLoading, setIsLoading] = React.useState(true)
@@ -171,18 +186,22 @@ export function TimeSeriesChart({
   }, [])
 
   if (isLoading) {
+    const skeletonHeight = layoutMode === "vertical" ? "h-[150px] max-h-[150px]" : "h-[250px]";
     return (
       <Card className="py-0 min-w-0 w-full">
         <CardContent className="px-2 sm:p-6 w-full">
-          <div className="h-[250px] w-full min-w-0 flex items-center justify-center">
+          <div className={`${skeletonHeight} w-full min-w-0 flex items-center justify-center`}>
             <div className="w-full space-y-2">
-              <Skeleton className="h-[250px] w-full" />
+              <Skeleton className={`${skeletonHeight} w-full`} />
             </div>
+          </div>
+          <div className="flex justify-end w-full pt-4">
+            <Skeleton className="h-6 w-32" />
           </div>
         </CardContent>
       </Card>
     )
   }
 
-  return <ChartBarInteractive title={title} data={chartData} selectedDate={selectedDate} setSelectedDate={setSelectedDate} />
-}
+  return <ChartBarInteractive title={title} data={chartData} selectedDate={selectedDate} setSelectedDate={setSelectedDate} layoutMode={layoutMode} />
+})
