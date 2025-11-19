@@ -66,6 +66,16 @@ export const ChartBarInteractive = React.memo(function ChartBarInteractive({
     }
   }, [data, selectedDataPoint, selectedDate])
 
+  React.useEffect(() => {
+    if (!selectedDate || selectedDataPoint?.date === selectedDate) return
+
+    const matchingPoint = data.find((point) => point.date === selectedDate)
+    if (matchingPoint) {
+      lastUpdateRef.current = matchingPoint.date
+      setSelectedDataPoint(matchingPoint)
+    }
+  }, [data, selectedDate, selectedDataPoint])
+
   const handleBarMouseEnter = React.useCallback((barItem: any) => {
     // barItem.payload contains the actual data point
     if (barItem?.payload) {
