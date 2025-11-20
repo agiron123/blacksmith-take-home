@@ -18,7 +18,6 @@ import { Skeleton } from "@/components/ui/skeleton"
 import { useDashboardStore } from "@/stores/dashboardStore"
 import { useSharedChartData, type ChartDataPoint } from "@/hooks/useSharedChartData"
 
-export const description = "An interactive bar chart"
 
 const chartConfig = {
   views: {
