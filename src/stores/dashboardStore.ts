@@ -13,17 +13,10 @@ interface DashboardState {
   setLayoutMode: (mode: LayoutMode) => void;
 }
 
-// Default date range aligned with sample data (April 1 - June 30, 2024)
-// This ensures the ReferenceArea shows up by default
-export const defaultDateRange = {
-  start: new Date("2024-04-15T00:00:00"), // Mid-April
-  end: new Date("2024-05-15T00:00:00"), // Mid-May
-};
-
 export const useDashboardStore = create<DashboardState>((set) => ({
   hoveredX: null,
   selectedDate: null,
-  dateRange: defaultDateRange,
+  dateRange: null,
   layoutMode: "grid",
   setHoveredX: (x) => set({ hoveredX: x }),
   setSelectedDate: (date) => set({ selectedDate: date }),

@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import { CalendarIcon, RotateCcw } from "lucide-react";
 import { format } from "date-fns";
-import { useDashboardStore, LayoutMode, defaultDateRange } from "@/stores/dashboardStore";
+import { useDashboardStore, LayoutMode } from "@/stores/dashboardStore";
 import { Button } from "@/components/ui/button";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import { Calendar } from "@/components/ui/calendar";
@@ -46,8 +46,8 @@ export function DashboardHeader() {
 
   const handleCancel = () => {
     setDraftRange({
-      from: dateRange.start,
-      to: dateRange.end,
+      from: dateRange?.start,
+      to: dateRange?.end,
     });
     setIsDatePickerOpen(false);
   };

@@ -1,11 +1,17 @@
 import { useMemo } from "react";
-import { useDashboardStore, defaultDateRange } from "@/stores/dashboardStore";
+import { useDashboardStore } from "@/stores/dashboardStore";
 import { generateAllMockData } from "@/utils/mockData";
 import { TimeSeriesChart } from "@/components/TimeSeriesChart";
 import { DashboardHeader } from "@/components/DashboardHeader";
 import { VerticalLayout } from "@/components/layouts/VerticalLayout";
 import { GridLayout } from "@/components/layouts/GridLayout";
 import { FreeLayout } from "@/components/layouts/FreeLayout";
+
+// Default date range based on the actual chart data (April 1 - June 30, 2024)
+const defaultDateRange = {
+  start: new Date("2024-04-01T00:00:00"),
+  end: new Date("2024-06-30T00:00:00"),
+};
 
 export function DashboardPage() {
   const { layoutMode, dateRange } = useDashboardStore();
