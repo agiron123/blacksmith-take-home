@@ -6,7 +6,7 @@ export interface ChartDataPoint {
   mobile: number
 }
 
-type Cache = {
+interface Cache {
   data: ChartDataPoint[] | null
   promise: Promise<ChartDataPoint[]> | null
   error: unknown
