@@ -2,7 +2,7 @@
 
 import * as React from "react"
 
-import { Bar, BarChart, CartesianGrid, ReferenceArea, Tooltip, XAxis } from "recharts"
+import { Bar, BarChart, CartesianGrid, ReferenceArea, Tooltip as RechartsTooltip, XAxis } from "recharts"
 
 import {
   Card,
@@ -94,7 +94,7 @@ const ChartBody = React.memo(function ChartBody({
             strokeWidth={isDragging ? 2 : 1}
           />
         ) : null}
-        <Tooltip
+        <RechartsTooltip
           content={() => null}
           cursor={{ fill: "rgba(0, 0, 0, 0.1)" }}
         />
@@ -352,10 +352,35 @@ export const ChartBarInteractive = React.memo(function ChartBarInteractive({
     return { start: startLabel, end: endLabel }
   }, [data, dateRange, isDragging, dragStart, dragEnd])
 
+  // Calculate aggregates for the selected range
+  const rangeAggregates = React.useMemo(() => {
+    if (!highlightRange) return null
+
+    const startIndex = data.findIndex(p => p.date === highlightRange.start)
+    const endIndex = data.findIndex(p => p.date === highlightRange.end)
+
+    if (startIndex === -1 || endIndex === -1) return null
+
+    const minIndex = Math.min(startIndex, endIndex)
+    const maxIndex = Math.max(startIndex, endIndex)
+    const rangeData = data.slice(minIndex, maxIndex + 1)
+
+    const desktopSum = rangeData.reduce((sum, point) => sum + point.desktop, 0)
+    const mobileSum = rangeData.reduce((sum, point) => sum + point.mobile, 0)
+
+    return {
+      desktop: desktopSum,
+      mobile: mobileSum,
+      count: rangeData.length,
+    }
+  }, [highlightRange, data])
+
+  const hasSelectedRange = highlightRange !== null && !isDragging
+
   return (
     <Card className="py-0 w-full h-full flex flex-col overflow-hidden">
       <CardContent className="px-2 sm:p-6 w-full h-full flex flex-col min-h-0 flex-1">
-        <div ref={chartContainerRef} className="flex-1 min-h-0 flex flex-col">
+        <div ref={chartContainerRef} className="flex-1 min-h-0 flex flex-col relative">
           <ChartBody
             data={data}
             activeChart={activeChart}
@@ -368,6 +393,28 @@ export const ChartBarInteractive = React.memo(function ChartBarInteractive({
             onMouseUp={handleMouseUp}
             isDragging={isDragging}
           />
+          
+          {hasSelectedRange && rangeAggregates && (
+            <div className="absolute top-2 left-1/2 -translate-x-1/2 z-50 pointer-events-none">
+              <div className="bg-slate-900 text-white border border-slate-700 shadow-lg rounded-md px-3 py-2 min-w-[200px]">
+                <div className="space-y-1.5">
+                  <div className="text-xs space-y-1">
+                    <div className="flex justify-between">
+                      <span className="text-slate-300">{highlightRange.start}</span>
+                      <span className="text-slate-300">to</span>
+                      <span className="text-slate-300">{highlightRange.end}</span>
+                    </div>
+                    <div className="flex justify-between pt-1 border-t border-slate-700">
+                      <span className="text-slate-300">Total:</span>
+                      <span className="font-semibold text-emerald-400">
+                        {(rangeAggregates.desktop + rangeAggregates.mobile).toLocaleString()}
+                      </span>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          )}
         </div>
 
           <div className="flex justify-end w-full pt-4 flex-shrink-0">
