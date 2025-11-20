@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react"
+import { toast } from "sonner"
 
 export interface ChartDataPoint {
   date: string
@@ -51,7 +52,12 @@ export function useSharedChartData() {
 
     cache.promise
       .then((json) => setData(json))
-      .catch((err) => setError(err))
+      .catch((err) => {
+        setError(err)
+        toast.error("Failed to load chart data", {
+          description: err instanceof Error ? err.message : "An unexpected error occurred",
+        })
+      })
       .finally(() => setIsLoading(false))
   }, [])
 
