@@ -30,6 +30,7 @@ export function DashboardPage() {
         chartId={data.id}
         title={data.title}
         layoutMode={layoutMode}
+        data={data}
       />
     ));
 
