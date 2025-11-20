@@ -62,7 +62,7 @@ const ChartBody = React.memo(function ChartBody({
   return (
     <ChartContainer
       config={chartConfig}
-      className={`w-full min-w-0 ${layoutMode === "vertical" ? "max-h-[138px]" : "min-h-[250px]"} ${isDragging ? "cursor-crosshair" : ""}`}
+      className={`w-full h-full min-w-0 min-h-0 flex-1 ${layoutMode === "vertical" ? "max-h-[138px]" : ""} ${isDragging ? "cursor-crosshair" : ""}`}
       onMouseDown={onMouseDown}
       onMouseMove={onMouseMove}
       onMouseUp={onMouseUp}
@@ -353,9 +353,9 @@ export const ChartBarInteractive = React.memo(function ChartBarInteractive({
   }, [data, dateRange, isDragging, dragStart, dragEnd])
 
   return (
-    <Card className="py-0 w-full">
-      <CardContent className="px-2 sm:p-6 w-full">
-        <div ref={chartContainerRef}>
+    <Card className="py-0 w-full h-full flex flex-col overflow-hidden">
+      <CardContent className="px-2 sm:p-6 w-full h-full flex flex-col min-h-0 flex-1">
+        <div ref={chartContainerRef} className="flex-1 min-h-0 flex flex-col">
           <ChartBody
             data={data}
             activeChart={activeChart}
@@ -370,7 +370,7 @@ export const ChartBarInteractive = React.memo(function ChartBarInteractive({
           />
         </div>
 
-          <div className="flex justify-end w-full pt-4">
+          <div className="flex justify-end w-full pt-4 flex-shrink-0">
             <div className="inline-flex h-6 items-stretch rounded-[4px] overflow-hidden border border-slate-300 text-xs leading-none">
               <div className="flex items-center justify-center bg-emerald-400 px-3 text-white font-semibold">
                 {selectedDataPoint ? selectedDataPoint.date : '----------'}
@@ -414,14 +414,14 @@ export const TimeSeriesChart = React.memo(function TimeSeriesChart({
   if (isWaitingForData) {
     const skeletonHeight = layoutMode === "vertical" ? "h-[150px] max-h-[150px]" : "h-[250px]"
     return (
-      <Card className="py-0 min-w-0 w-full">
-        <CardContent className="px-2 sm:p-6 w-full">
-          <div className={`${skeletonHeight} w-full min-w-0 flex items-center justify-center`}>
+      <Card className="py-0 min-w-0 w-full h-full flex flex-col overflow-hidden">
+        <CardContent className="px-2 sm:p-6 w-full h-full flex flex-col min-h-0 flex-1">
+          <div className={`${skeletonHeight} w-full min-w-0 flex items-center justify-center flex-1`}>
             <div className="w-full space-y-2">
               <Skeleton className={`${skeletonHeight} w-full`} />
             </div>
           </div>
-          <div className="flex justify-end w-full pt-4">
+          <div className="flex justify-end w-full pt-4 flex-shrink-0">
             <Skeleton className="h-6 w-32" />
           </div>
         </CardContent>
