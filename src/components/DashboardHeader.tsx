@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
-import { CalendarIcon } from "lucide-react";
+import { CalendarIcon, RotateCcw } from "lucide-react";
 import { format } from "date-fns";
-import { useDashboardStore, LayoutMode } from "@/stores/dashboardStore";
+import { useDashboardStore, LayoutMode, defaultDateRange } from "@/stores/dashboardStore";
 import { Button } from "@/components/ui/button";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import { Calendar } from "@/components/ui/calendar";
@@ -15,18 +15,18 @@ export function DashboardHeader() {
     from: Date | undefined;
     to: Date | undefined;
   }>({
-    from: dateRange.start,
-    to: dateRange.end,
+    from: dateRange?.start,
+    to: dateRange?.end,
   });
 
   useEffect(() => {
     if (isDatePickerOpen) {
       setDraftRange({
-        from: dateRange.start,
-        to: dateRange.end,
+        from: dateRange?.start,
+        to: dateRange?.end,
       });
     }
-  }, [dateRange.end, dateRange.start, isDatePickerOpen]);
+  }, [dateRange?.end, dateRange?.start, isDatePickerOpen]);
 
   const handleDateSelect = (range: { from: Date | undefined; to: Date | undefined } | undefined) =>
     setDraftRange({
@@ -81,7 +81,18 @@ export function DashboardHeader() {
         </ToggleGroup>
       </div>
 
-      <Popover open={isDatePickerOpen} onOpenChange={setIsDatePickerOpen}>
+      <div className="flex items-center gap-2">
+        <Button
+          variant="outline"
+          size="icon"
+          onClick={() => {
+            setDateRange(null);
+          }}
+          title="Reset date range"
+        >
+          <RotateCcw className="h-4 w-4" />
+        </Button>
+        <Popover open={isDatePickerOpen} onOpenChange={setIsDatePickerOpen}>
         <PopoverTrigger asChild>
           <Button
             variant="outline"
@@ -104,7 +115,7 @@ export function DashboardHeader() {
           <div className="p-3 space-y-3">
             <Calendar
               mode="range"
-              defaultMonth={draftRange.from ?? dateRange.start}
+              defaultMonth={draftRange.from ?? dateRange?.start ?? new Date()}
               selected={{
                 from: draftRange.from,
                 to: draftRange.to,
@@ -132,6 +143,7 @@ export function DashboardHeader() {
           </div>
         </PopoverContent>
       </Popover>
+      </div>
     </div>
   );
 }

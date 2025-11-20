@@ -1,5 +1,5 @@
 import { useMemo } from "react";
-import { useDashboardStore } from "@/stores/dashboardStore";
+import { useDashboardStore, defaultDateRange } from "@/stores/dashboardStore";
 import { generateAllMockData } from "@/utils/mockData";
 import { TimeSeriesChart } from "@/components/TimeSeriesChart";
 import { DashboardHeader } from "@/components/DashboardHeader";
@@ -10,9 +10,10 @@ import { FreeLayout } from "@/components/layouts/FreeLayout";
 export function DashboardPage() {
   const { layoutMode, dateRange } = useDashboardStore();
 
-  // Generate mock data based on current date range
+  // Generate mock data based on current date range (use default if null)
   const chartData = useMemo(() => {
-    return generateAllMockData(dateRange);
+    const rangeToUse = dateRange ?? defaultDateRange;
+    return generateAllMockData(rangeToUse);
   }, [dateRange]);
 
   // Render charts based on layout mode
