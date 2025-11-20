@@ -14,8 +14,6 @@ const STORAGE_KEY = "dashboard-free-layout";
 // Default layout for 9 charts in a 3x3 grid
 const getDefaultLayout = (): Layout[] => {
   const cols = 12; // Using 12 columns for flexibility
-  const _rowHeight = 100;
-  const _gap = 16;
 
   return Array.from({ length: 9 }, (_, i) => {
     const row = Math.floor(i / 3);
