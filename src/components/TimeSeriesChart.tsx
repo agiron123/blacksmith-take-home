@@ -37,6 +37,7 @@ interface ChartBodyProps {
   onMouseMove?: (e: React.MouseEvent) => void;
   onMouseUp?: (e: React.MouseEvent) => void;
   isDragging?: boolean;
+  color?: string;
 }
 
 const ChartBody = React.memo(function ChartBody({
@@ -50,8 +51,10 @@ const ChartBody = React.memo(function ChartBody({
   onMouseMove,
   onMouseUp,
   isDragging,
+  color,
 }: ChartBodyProps) {
   const chartRef = React.useRef<any>(null);
+  const barColor = color || `var(--color-${activeChart})`;
 
   return (
     <ChartContainer
@@ -88,12 +91,12 @@ const ChartBody = React.memo(function ChartBody({
         <RechartsTooltip content={() => null} cursor={{ fill: "rgba(0, 0, 0, 0.1)" }} />
         <Bar
           dataKey={activeChart}
-          fill={`var(--color-${activeChart})`}
+          fill={barColor}
           radius={8}
           activeBar={{
-            fill: `var(--color-${activeChart})`,
+            fill: barColor,
             opacity: 0.8,
-            stroke: `var(--color-${activeChart})`,
+            stroke: barColor,
             strokeWidth: 2,
           }}
           onMouseEnter={onBarMouseEnter}
@@ -106,14 +109,42 @@ const ChartBody = React.memo(function ChartBody({
 
 ChartBody.displayName = "ChartBody";
 
+/**
+ * Formats a date string (YYYY-MM-DD) to display format (DD MMM YYYY)
+ * Example: "2024-08-12" -> "12 Aug 2024"
+ */
+function formatDisplayDate(dateString: string): string {
+  const date = new Date(`${dateString}T00:00:00`);
+  const day = date.getDate();
+  const monthNames = [
+    "Jan",
+    "Feb",
+    "Mar",
+    "Apr",
+    "May",
+    "Jun",
+    "Jul",
+    "Aug",
+    "Sep",
+    "Oct",
+    "Nov",
+    "Dec",
+  ];
+  const month = monthNames[date.getMonth()];
+  const year = date.getFullYear();
+  return `${day} ${month} ${year}`;
+}
+
 export const ChartBarInteractive = React.memo(function ChartBarInteractive({
   title: _title,
   data,
   layoutMode,
+  color,
 }: {
   title?: string;
   data: ChartDataPoint[];
   layoutMode?: "vertical" | "grid" | "free";
+  color?: string;
 }) {
   const [activeChart] = React.useState<keyof typeof chartConfig>("events");
   const [selectedDataPoint, setSelectedDataPoint] = React.useState<ChartDataPoint | null>(null);
@@ -391,22 +422,34 @@ export const ChartBarInteractive = React.memo(function ChartBarInteractive({
             onMouseMove={handleMouseMove}
             onMouseUp={handleMouseUp}
             isDragging={isDragging}
+            color={color}
           />
         </div>
 
-        <div className="flex justify-between items-center w-full pt-4 flex-shrink-0">
+        <div className="flex justify-between items-center w-full pt-4 pb-2 sm:pb-6 flex-shrink-0">
           {hasSelectedRange && rangeAggregates && highlightRange ? (
             <div className="text-xs text-slate-600 font-medium">
-              {highlightRange.start.split("-").slice(1).join("-")} to{" "}
-              {highlightRange.end.split("-").slice(1).join("-")} Total:{" "}
+              {formatDisplayDate(highlightRange.start)} to{" "}
+              {formatDisplayDate(highlightRange.end)} Total:{" "}
               {rangeAggregates.events.toLocaleString()}
             </div>
           ) : (
             <div className="text-xs text-slate-600 font-medium">{_title}</div>
           )}
-          <div className="inline-flex h-6 items-stretch rounded-[4px] overflow-hidden border border-slate-300 text-xs leading-none">
-            <div className="flex items-center justify-center bg-emerald-400 px-3 text-white font-semibold">
-              {selectedDataPoint ? selectedDataPoint.date : "----------"}
+          <div
+            className="inline-flex h-6 items-stretch rounded-[4px] overflow-hidden border text-xs leading-none"
+            style={{
+              borderColor: color ?? "#2dd4bf", // fallback to teal/emerald if no color provided
+            }}
+          >
+            <div
+              className="flex items-center justify-center px-3 text-white font-semibold whitespace-nowrap flex-shrink-0"
+              style={{
+                backgroundColor: color ?? "#2dd4bf",
+                color: "#fff",
+              }}
+            >
+              {selectedDataPoint ? formatDisplayDate(selectedDataPoint.date) : "----------"}
             </div>
             <div className="flex min-w-[48px] items-center justify-center bg-white px-3 text-black font-semibold">
               {selectedDataPoint == null ? "---" : selectedDataPoint.events}
@@ -424,6 +467,7 @@ interface TimeSeriesChartProps {
   data?: ChartDataPoint[] | null | undefined;
   layoutMode?: "vertical" | "grid" | "free";
   isLoading?: boolean;
+  color?: string;
 }
 
 export const TimeSeriesChart = React.memo(function TimeSeriesChart({
@@ -432,6 +476,7 @@ export const TimeSeriesChart = React.memo(function TimeSeriesChart({
   data,
   layoutMode,
   isLoading,
+  color,
 }: TimeSeriesChartProps) {
   if (isLoading) {
     const skeletonHeight = layoutMode === "vertical" ? "h-[150px] max-h-[150px]" : "h-[250px]";
@@ -453,5 +498,5 @@ export const TimeSeriesChart = React.memo(function TimeSeriesChart({
     );
   }
 
-  return <ChartBarInteractive title={title} data={data ?? []} layoutMode={layoutMode} />;
+  return <ChartBarInteractive title={title} data={data ?? []} layoutMode={layoutMode} color={color} />;
 });

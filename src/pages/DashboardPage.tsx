@@ -21,16 +21,32 @@ export function DashboardPage() {
   // Render charts based on layout mode
   const renderCharts = () => {
     // For demo purpose, split into multiple charts if needed — here we just render 9 identical charts for now
-    const charts = Array.from({ length: 9 }).map((_, idx) => (
-      <TimeSeriesChart
-        key={idx}
-        chartId={idx}
-        title={`Chart ${idx + 1}`}
-        layoutMode={layoutMode}
-        data={chartData}
-        isLoading={isLoading}
-      />
-    ));
+    const charts = Array.from({ length: 9 }).map((_, idx) => {
+      // Determine color based on chart position
+      // First three (0-2): #0072DB
+      // Next three (3-5): #34D399
+      // Last three (6-8): #F87171
+      let color: string;
+      if (idx < 3) {
+        color = "#0072DB";
+      } else if (idx < 6) {
+        color = "#34D399";
+      } else {
+        color = "#F87171";
+      }
+
+      return (
+        <TimeSeriesChart
+          key={idx}
+          chartId={idx}
+          title={`Chart ${idx + 1}`}
+          layoutMode={layoutMode}
+          data={chartData}
+          isLoading={isLoading}
+          color={color}
+        />
+      );
+    });
 
     switch (layoutMode) {
       case "vertical":
