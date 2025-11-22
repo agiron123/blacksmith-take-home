@@ -1,5 +1,6 @@
 import { serve } from "bun";
 import index from "./index.html";
+import { chartData } from "./data/chartData";
 
 const server = serve({
   routes: {
@@ -18,6 +19,12 @@ const server = serve({
           message: "Hello, world!",
           method: "PUT",
         });
+      },
+    },
+
+    "/api/chart-data": {
+      async GET(_req: Request) {
+        return Response.json(chartData);
       },
     },
 
