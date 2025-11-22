@@ -7,10 +7,10 @@ import { VerticalLayout } from "@/components/layouts/VerticalLayout";
 import { GridLayout } from "@/components/layouts/GridLayout";
 import { FreeLayout } from "@/components/layouts/FreeLayout";
 
-// Default date range based on the actual chart data (April 1 - June 30, 2024)
+// Default date range based on the actual chart data (July 1 - December 31, 2025)
 const defaultDateRange = {
-  start: new Date("2024-04-01T00:00:00"),
-  end: new Date("2024-06-30T00:00:00"),
+  start: new Date("2025-07-01T00:00:00"),
+  end: new Date("2025-12-31T00:00:00"),
 };
 
 export function DashboardPage() {

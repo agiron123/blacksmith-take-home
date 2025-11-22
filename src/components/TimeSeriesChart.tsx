@@ -392,31 +392,16 @@ export const ChartBarInteractive = React.memo(function ChartBarInteractive({
             onMouseUp={handleMouseUp}
             isDragging={isDragging}
           />
-          
-          {hasSelectedRange && rangeAggregates && (
-            <div className="absolute top-2 left-1/2 -translate-x-1/2 z-50 pointer-events-none">
-              <div className="bg-slate-900 text-white border border-slate-700 shadow-lg rounded-md px-3 py-2 min-w-[200px]">
-                <div className="space-y-1.5">
-                  <div className="text-xs space-y-1">
-                    <div className="flex justify-between">
-                      <span className="text-slate-300">{highlightRange.start}</span>
-                      <span className="text-slate-300">to</span>
-                      <span className="text-slate-300">{highlightRange.end}</span>
-                    </div>
-                    <div className="flex justify-between pt-1 border-t border-slate-700">
-                      <span className="text-slate-300">Total:</span>
-                      <span className="font-semibold text-emerald-400">
-                        {(rangeAggregates.desktop + rangeAggregates.mobile).toLocaleString()}
-                      </span>
-                    </div>
-                  </div>
-                </div>
-              </div>
-            </div>
-          )}
         </div>
 
-          <div className="flex justify-end w-full pt-4 flex-shrink-0">
+          <div className="flex justify-between items-center w-full pt-4 flex-shrink-0">
+            {hasSelectedRange && rangeAggregates && highlightRange ? (
+              <div className="text-xs text-slate-600 font-medium">
+                {highlightRange.start.split('-').slice(1).join('-')} to {highlightRange.end.split('-').slice(1).join('-')} Total: {(rangeAggregates.desktop + rangeAggregates.mobile).toLocaleString()}
+              </div>
+            ) : (
+              <div className="text-xs text-slate-600 font-medium">{_title}</div>
+            )}
             <div className="inline-flex h-6 items-stretch rounded-[4px] overflow-hidden border border-slate-300 text-xs leading-none">
               <div className="flex items-center justify-center bg-emerald-400 px-3 text-white font-semibold">
                 {selectedDataPoint ? selectedDataPoint.date : '----------'}
