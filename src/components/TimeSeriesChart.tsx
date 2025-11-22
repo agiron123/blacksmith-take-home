@@ -37,7 +37,7 @@ interface ChartBodyProps {
   onMouseMove?: (e: React.MouseEvent) => void;
   onMouseUp?: (e: React.MouseEvent) => void;
   isDragging?: boolean;
-};
+}
 
 const ChartBody = React.memo(function ChartBody({
   data,

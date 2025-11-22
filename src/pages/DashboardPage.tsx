@@ -1,5 +1,4 @@
-
-  // Use the shared chart data hook to get the data once for all charts
+// Use the shared chart data hook to get the data once for all charts
 import { useSharedChartData } from "@/hooks/useSharedChartData";
 import { useDashboardStore } from "@/stores/dashboardStore";
 import { TimeSeriesChart } from "@/components/TimeSeriesChart";
