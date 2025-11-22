@@ -1,4 +1,4 @@
-# bun-react-tailwind-shadcn-template
+# Blacksmith.sh Take Home
 
 To install dependencies:
 

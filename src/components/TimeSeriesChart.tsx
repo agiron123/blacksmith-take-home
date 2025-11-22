@@ -17,21 +17,27 @@ import { type ChartConfig, ChartContainer } from "@/components/ui/chart";
 
 import { Skeleton } from "@/components/ui/skeleton";
 import { useDashboardStore } from "@/stores/dashboardStore";
-import { useSharedChartData, type ChartDataPoint } from "@/hooks/useSharedChartData";
+import { type ChartDataPoint } from "@/hooks/useSharedChartData";
 
 const chartConfig = {
-  views: {
-    label: "Page Views",
-  },
-  desktop: {
-    label: "Desktop",
-    color: "var(--chart-2)",
-  },
-  mobile: {
-    label: "Mobile",
+  events: {
+    label: "Events",
     color: "var(--chart-1)",
   },
 } satisfies ChartConfig;
+
+interface ChartBodyProps {
+  data: ChartDataPoint[];
+  activeChart: keyof typeof chartConfig;
+  layoutMode?: "vertical" | "grid" | "free";
+  onBarMouseEnter: (barItem: unknown) => void;
+  onBarMouseLeave: () => void;
+  highlightRange?: { start: string; end: string } | null;
+  onMouseDown?: (e: React.MouseEvent) => void;
+  onMouseMove?: (e: React.MouseEvent) => void;
+  onMouseUp?: (e: React.MouseEvent) => void;
+  isDragging?: boolean;
+};
 
 const ChartBody = React.memo(function ChartBody({
   data,
@@ -44,18 +50,7 @@ const ChartBody = React.memo(function ChartBody({
   onMouseMove,
   onMouseUp,
   isDragging,
-}: {
-  data: ChartDataPoint[];
-  activeChart: keyof typeof chartConfig;
-  layoutMode?: "vertical" | "grid" | "free";
-  onBarMouseEnter: (barItem: unknown) => void;
-  onBarMouseLeave: () => void;
-  highlightRange?: { start: string; end: string } | null;
-  onMouseDown?: (e: React.MouseEvent) => void;
-  onMouseMove?: (e: React.MouseEvent) => void;
-  onMouseUp?: (e: React.MouseEvent) => void;
-  isDragging?: boolean;
-}) {
+}: ChartBodyProps) {
   const chartRef = React.useRef<any>(null);
 
   return (
@@ -120,7 +115,7 @@ export const ChartBarInteractive = React.memo(function ChartBarInteractive({
   data: ChartDataPoint[];
   layoutMode?: "vertical" | "grid" | "free";
 }) {
-  const [activeChart] = React.useState<keyof typeof chartConfig>("desktop");
+  const [activeChart] = React.useState<keyof typeof chartConfig>("events");
   const [selectedDataPoint, setSelectedDataPoint] = React.useState<ChartDataPoint | null>(null);
   const lastUpdateRef = React.useRef<string | null>(null);
   const selectedDate = useDashboardStore((state) => state.selectedDate);
@@ -371,12 +366,10 @@ export const ChartBarInteractive = React.memo(function ChartBarInteractive({
     const maxIndex = Math.max(startIndex, endIndex);
     const rangeData = data.slice(minIndex, maxIndex + 1);
 
-    const desktopSum = rangeData.reduce((sum, point) => sum + point.desktop, 0);
-    const mobileSum = rangeData.reduce((sum, point) => sum + point.mobile, 0);
+    const eventsSum = rangeData.reduce((sum, point) => sum + point.events, 0);
 
     return {
-      desktop: desktopSum,
-      mobile: mobileSum,
+      events: eventsSum,
       count: rangeData.length,
     };
   }, [highlightRange, data]);
@@ -406,7 +399,7 @@ export const ChartBarInteractive = React.memo(function ChartBarInteractive({
             <div className="text-xs text-slate-600 font-medium">
               {highlightRange.start.split("-").slice(1).join("-")} to{" "}
               {highlightRange.end.split("-").slice(1).join("-")} Total:{" "}
-              {(rangeAggregates.desktop + rangeAggregates.mobile).toLocaleString()}
+              {rangeAggregates.events.toLocaleString()}
             </div>
           ) : (
             <div className="text-xs text-slate-600 font-medium">{_title}</div>
@@ -416,11 +409,7 @@ export const ChartBarInteractive = React.memo(function ChartBarInteractive({
               {selectedDataPoint ? selectedDataPoint.date : "----------"}
             </div>
             <div className="flex min-w-[48px] items-center justify-center bg-white px-3 text-black font-semibold">
-              {selectedDataPoint == null
-                ? "---"
-                : activeChart === "desktop"
-                  ? selectedDataPoint.desktop
-                  : selectedDataPoint.mobile}
+              {selectedDataPoint == null ? "---" : selectedDataPoint.events}
             </div>
           </div>
         </div>
@@ -429,28 +418,22 @@ export const ChartBarInteractive = React.memo(function ChartBarInteractive({
   );
 });
 
+interface TimeSeriesChartProps {
+  chartId?: number;
+  title?: string;
+  data?: ChartDataPoint[] | null | undefined;
+  layoutMode?: "vertical" | "grid" | "free";
+  isLoading?: boolean;
+}
+
 export const TimeSeriesChart = React.memo(function TimeSeriesChart({
   chartId: _chartId,
   title,
-  data: providedData,
+  data,
   layoutMode,
-}: {
-  chartId?: number;
-  title?: string;
-  data?: ChartDataPoint[] | null;
-  layoutMode?: "vertical" | "grid" | "free";
-}) {
-  const { data: sharedData, isLoading } = useSharedChartData();
-  const chartData = React.useMemo(() => {
-    if (providedData && Array.isArray(providedData) && providedData.length > 0) {
-      return providedData;
-    }
-    return sharedData ?? [];
-  }, [providedData, sharedData]);
-
-  const isWaitingForData = isLoading && chartData.length === 0;
-
-  if (isWaitingForData) {
+  isLoading,
+}: TimeSeriesChartProps) {
+  if (isLoading) {
     const skeletonHeight = layoutMode === "vertical" ? "h-[150px] max-h-[150px]" : "h-[250px]";
     return (
       <Card className="py-0 min-w-0 w-full h-full flex flex-col overflow-hidden">
@@ -470,5 +453,5 @@ export const TimeSeriesChart = React.memo(function TimeSeriesChart({
     );
   }
 
-  return <ChartBarInteractive title={title} data={chartData} layoutMode={layoutMode} />;
+  return <ChartBarInteractive title={title} data={data ?? []} layoutMode={layoutMode} />;
 });

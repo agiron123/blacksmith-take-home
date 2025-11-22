@@ -1,6 +1,7 @@
-import { useMemo } from "react";
+
+  // Use the shared chart data hook to get the data once for all charts
+import { useSharedChartData } from "@/hooks/useSharedChartData";
 import { useDashboardStore } from "@/stores/dashboardStore";
-import { generateAllMockData } from "@/utils/mockData";
 import { TimeSeriesChart } from "@/components/TimeSeriesChart";
 import { DashboardHeader } from "@/components/DashboardHeader";
 import { VerticalLayout } from "@/components/layouts/VerticalLayout";
@@ -8,29 +9,27 @@ import { GridLayout } from "@/components/layouts/GridLayout";
 import { FreeLayout } from "@/components/layouts/FreeLayout";
 
 // Default date range based on the actual chart data (July 1 - December 31, 2025)
-const defaultDateRange = {
-  start: new Date("2025-07-01T00:00:00"),
-  end: new Date("2025-12-31T00:00:00"),
-};
+// const defaultDateRange = {
+//   start: new Date("2025-07-01T00:00:00"),
+//   end: new Date("2025-12-31T00:00:00"),
+// };
 
 export function DashboardPage() {
-  const { layoutMode, dateRange } = useDashboardStore();
+  const { layoutMode } = useDashboardStore();
 
-  // Generate mock data based on current date range (use default if null)
-  const chartData = useMemo(() => {
-    const rangeToUse = dateRange ?? defaultDateRange;
-    return generateAllMockData(rangeToUse);
-  }, [dateRange]);
+  const { data: chartData, isLoading } = useSharedChartData();
 
   // Render charts based on layout mode
   const renderCharts = () => {
-    const charts = chartData.map((data) => (
+    // For demo purpose, split into multiple charts if needed — here we just render 9 identical charts for now
+    const charts = Array.from({ length: 9 }).map((_, idx) => (
       <TimeSeriesChart
-        key={data.id}
-        chartId={data.id}
-        title={data.title}
+        key={idx}
+        chartId={idx}
+        title={`Chart ${idx + 1}`}
         layoutMode={layoutMode}
-        data={data}
+        data={chartData}
+        isLoading={isLoading}
       />
     ));
 

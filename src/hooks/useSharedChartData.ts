@@ -2,8 +2,7 @@ import { useEffect, useState } from "react";
 
 export interface ChartDataPoint {
   date: string;
-  desktop: number;
-  mobile: number;
+  events: number;
 }
 
 interface Cache {
