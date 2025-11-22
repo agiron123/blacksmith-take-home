@@ -93,56 +93,57 @@ export function DashboardHeader() {
           <RotateCcw className="h-4 w-4" />
         </Button>
         <Popover open={isDatePickerOpen} onOpenChange={setIsDatePickerOpen}>
-        <PopoverTrigger asChild>
-          <Button
-            variant="outline"
-            className={cn(
-              "w-[280px] justify-start text-left font-normal",
-              !dateRange && "text-muted-foreground",
-            )}
-          >
-            <CalendarIcon className="mr-2 h-4 w-4" />
-            {dateRange?.start && dateRange?.end ? (
-              <>
-                {format(dateRange.start, "MMM dd, yyyy")} - {format(dateRange.end, "MMM dd, yyyy")}
-              </>
-            ) : (
-              <span>Pick a date range</span>
-            )}
-          </Button>
-        </PopoverTrigger>
-        <PopoverContent className="w-auto p-0" align="end">
-          <div className="p-3 space-y-3">
-            <Calendar
-              mode="range"
-              defaultMonth={draftRange.from ?? dateRange?.start ?? new Date()}
-              selected={{
-                from: draftRange.from,
-                to: draftRange.to,
-              }}
-              onSelect={handleDateSelect}
-              numberOfMonths={2}
-            />
-            <div className="flex items-center justify-between gap-2">
-              <Button variant="ghost" size="sm" onClick={handleReset}>
-                Reset
-              </Button>
-              <div className="flex items-center gap-2">
-                <Button variant="outline" size="sm" onClick={handleCancel}>
-                  Cancel
+          <PopoverTrigger asChild>
+            <Button
+              variant="outline"
+              className={cn(
+                "w-[280px] justify-start text-left font-normal",
+                !dateRange && "text-muted-foreground",
+              )}
+            >
+              <CalendarIcon className="mr-2 h-4 w-4" />
+              {dateRange?.start && dateRange?.end ? (
+                <>
+                  {format(dateRange.start, "MMM dd, yyyy")} -{" "}
+                  {format(dateRange.end, "MMM dd, yyyy")}
+                </>
+              ) : (
+                <span>Pick a date range</span>
+              )}
+            </Button>
+          </PopoverTrigger>
+          <PopoverContent className="w-auto p-0" align="end">
+            <div className="p-3 space-y-3">
+              <Calendar
+                mode="range"
+                defaultMonth={draftRange.from ?? dateRange?.start ?? new Date()}
+                selected={{
+                  from: draftRange.from,
+                  to: draftRange.to,
+                }}
+                onSelect={handleDateSelect}
+                numberOfMonths={2}
+              />
+              <div className="flex items-center justify-between gap-2">
+                <Button variant="ghost" size="sm" onClick={handleReset}>
+                  Reset
                 </Button>
-                <Button
-                  size="sm"
-                  onClick={handleSave}
-                  disabled={!draftRange.from || !draftRange.to}
-                >
-                  Save
-                </Button>
+                <div className="flex items-center gap-2">
+                  <Button variant="outline" size="sm" onClick={handleCancel}>
+                    Cancel
+                  </Button>
+                  <Button
+                    size="sm"
+                    onClick={handleSave}
+                    disabled={!draftRange.from || !draftRange.to}
+                  >
+                    Save
+                  </Button>
+                </div>
               </div>
             </div>
-          </div>
-        </PopoverContent>
-      </Popover>
+          </PopoverContent>
+        </Popover>
       </div>
     </div>
   );

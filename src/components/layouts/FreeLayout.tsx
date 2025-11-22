@@ -94,7 +94,10 @@ export function FreeLayout({ children }: FreeLayoutProps) {
         containerPadding={[0, 0]}
       >
         {children.map((child, index) => (
-          <div key={index.toString()} className="w-full h-full cursor-move min-w-0 min-h-0 overflow-hidden">
+          <div
+            key={index.toString()}
+            className="w-full h-full cursor-move min-w-0 min-h-0 overflow-hidden"
+          >
             {child}
           </div>
         ))}
